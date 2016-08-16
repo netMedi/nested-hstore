@@ -16,13 +16,45 @@ describe ActiveRecord::Coders::NestedHstore do
   describe "dumping and loading" do
     context "with a nested hash" do
       let(:value) { { 'foo' => { 'bar' => 'baz' } } }
-      
+
       it "preserves the value" do
         post = Post.new(properties: value)
         post.save!
         post.reload
         post.properties.should == value
       end
+    end
+  end
+
+  describe "accessing hash with symbols and string" do
+    let(:symbol_value) { {foo_symbol: "bar 1"} }
+    let(:string_value) { {"foo_string": "bar 2"} }
+    let(:mixed_values) { symbol_value.merge(string_value) }
+
+    it "should allow fetching symbol" do
+      post = Post.create!(properties: symbol_value)
+      post.reload
+
+      post.properties[:foo_symbol].should == "bar 1"
+      post.properties["foo_symbol"].should == "bar 1"
+    end
+
+    it "should allow fetching string" do
+      post = Post.create!(properties: string_value)
+      post.reload
+
+      post.properties[:foo_string].should == "bar 2"
+      post.properties["foo_string"].should == "bar 2"
+    end
+
+    it "should allow fetching string & symbol" do
+      post = Post.create!(properties: mixed_values)
+      post.reload
+
+      post.properties[:foo_string].should == "bar 2"
+      post.properties["foo_string"].should == "bar 2"
+      post.properties[:foo_symbol].should == "bar 1"
+      post.properties["foo_symbol"].should == "bar 1"
     end
   end
 end

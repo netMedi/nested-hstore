@@ -42,10 +42,12 @@ module NestedHstore
     end
 
     def deserialize(hash)
+      hash = ActiveSupport::HashWithIndifferentAccess.new(hash)
       return nil if hash.nil?
       raise 'Hstore value should be a hash' unless hash.is_a?(Hash)
       type_value = hash.delete(@type_key)
       type = @types_map_inverted[type_value]
+
       deserialized = case type
         when :array
           hash.values.map { |v| decode_json_if_json(v) }
@@ -63,6 +65,7 @@ module NestedHstore
           end
           hash
       end
+
       deserialized
     end
 
@@ -70,7 +73,7 @@ module NestedHstore
 
     def hash_to_hstore(type, hash)
       return {} if type == :hash && hash.blank?
-      
+
       hstore = hash.dup
       hstore.each do |k, v|
         if v.is_a?(Array) || v.is_a?(Hash)
