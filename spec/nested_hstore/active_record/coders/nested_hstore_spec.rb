@@ -3,6 +3,7 @@ require 'spec_helper'
 describe ActiveRecord::Coders::NestedHstore do
   class Post < ActiveRecord::Base
     serialize :properties, ActiveRecord::Coders::NestedHstore
+    serialize :properties_with_default, ActiveRecord::Coders::NestedHstore
   end
 
   before :all do
@@ -23,6 +24,24 @@ describe ActiveRecord::Coders::NestedHstore do
         post.reload
         post.properties.should == value
       end
+    end
+  end
+
+  describe "handling empty hstore" do
+    it "should keep default value when saving empty" do
+      post = Post.create!
+      post.properties.should == {}
+      post.properties_with_default.should == {}
+
+      post.save!
+
+      post.properties.should == {}
+      post.properties_with_default.should == {}
+
+      post.update_attributes(title: "testi")
+
+      post.properties.should == {}
+      post.properties_with_default.should == {}
     end
   end
 
