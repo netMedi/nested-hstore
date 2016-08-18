@@ -42,9 +42,9 @@ module NestedHstore
     end
 
     def deserialize(hash)
-      hash = ActiveSupport::HashWithIndifferentAccess.new(hash)
       return nil if hash.nil?
       raise 'Hstore value should be a hash' unless hash.is_a?(Hash)
+      hash = ActiveSupport::HashWithIndifferentAccess.new(hash)
       type_value = hash.delete(@type_key)
       type = @types_map_inverted[type_value]
 
