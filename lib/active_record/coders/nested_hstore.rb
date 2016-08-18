@@ -43,8 +43,6 @@ module ActiveRecord
       end
     else
       class NestedHstore
-        def
-
         def self.load(hstore)
           new.load(hstore)
         end
