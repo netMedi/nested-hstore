@@ -19,28 +19,6 @@ module ActiveRecord
           @nested_serializer.deserialize(super)
         end
       end
-    elsif ActiveRecord::VERSION::MAJOR >= 4 && ActiveRecord::VERSION::MINOR >= 2
-      class NestedHstore < ActiveRecord::Type::Value
-        def initialize
-          @nested_serializer = ::NestedHstore::Serializer.new
-        end
-
-        def type
-          :hstore
-        end
-
-        def type_cast_from_user(value)
-          value
-        end
-
-        def type_cast_from_database(hash)
-          @nested_serializer.deserialize(hash)
-        end
-
-        def type_cast_for_database(value)
-          @nested_serializer.serialize(value)
-        end
-      end
     else
       class NestedHstore
         def self.load(hstore)
